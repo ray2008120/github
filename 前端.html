@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Carv自动领积分脚本</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        #header {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        #keys-input {
+            width: 50%;
+            height: 150px;
+            margin-bottom: 20px;
+        }
+        button {
+            margin-bottom: 20px;
+        }
+        #footer {
+            position: absolute;
+            right: 10px;
+            bottom: 10px;
+            text-align: right;
+        }
+        .purple-text {
+            color: purple;
+        }
+    </style>
+</head>
+<body>
+    <div id="header">Carv自动领积分脚本</div>
+    <textarea id="keys-input" placeholder="请输入密钥，每行一个"></textarea>
+    <button onclick="submitKeys()">提交</button>
+    <div id="result"></div>
+    <div id="footer">
+        <span class="purple-text">脚本仅测试使用，请自行做好密钥保护和防女巫措施</span>
+    </div>
+
+    <script>
+function submitKeys() {
+    var keys = document.getElementById("keys-input").value.split('\n');
+    fetch('http://35.185.150.145:1110/process-keys', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ keys: keys }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        var resultElement = document.getElementById("result");
+        resultElement.innerHTML = ''; // 清空之前的结果
+        data.forEach((accountResults, index) => {
+            var accountResultText = `账号${index + 1}:<br>` + accountResults.join('<br>');
+            resultElement.innerHTML += `<div>${accountResultText}</div><br>`;
+        });
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById("result").innerText = 'Error: ' + error;
+    });
+}
+</script>
+
+</body>
+</html>
